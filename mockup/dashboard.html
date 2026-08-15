@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>대시보드 · coin</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">coin</div>
+  <div class="user-area">
+    <span class="badge badge-paper">PAPER TRADING</span>
+    <span>hongseongmin</span>
+    <a href="login.html">로그아웃</a>
+  </div>
+</div>
+
+<div class="dashboard">
+
+  <!-- GO/STOP 컨트롤 -->
+  <div class="card span-3 control-panel">
+    <div>
+      <h2 style="margin-bottom:4px;">매매 컨트롤</h2>
+      <span class="badge badge-status">현재 상태: STOPPED</span>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-go">GO</button>
+      <button class="btn btn-stop">STOP</button>
+      <button class="btn btn-kill">긴급 정지 (킬스위치)</button>
+    </div>
+  </div>
+
+  <!-- 상태 요약 -->
+  <div class="card span-1">
+    <h3>상태 요약</h3>
+    <div class="metric-row"><span class="label">매매 상태</span><span>관망 중</span></div>
+    <div class="metric-row"><span class="label">마지막 판단 시각</span><span>14:32:07</span></div>
+    <div class="metric-row"><span class="label">보유 포지션</span><span>없음</span></div>
+  </div>
+
+  <!-- 잔고/수익률 -->
+  <div class="card span-1">
+    <h3>잔고 / 수익률</h3>
+    <div class="metric-row"><span class="label">총 자산</span><span>1,000.00 USDT</span></div>
+    <div class="metric-row"><span class="label">오늘 수익률</span><span class="metric-value up">+1.24%</span></div>
+    <div class="metric-row"><span class="label">누적 수익률</span><span class="metric-value down">-0.58%</span></div>
+  </div>
+
+  <!-- 리스크 설정 -->
+  <div class="card span-1">
+    <h3>리스크 설정</h3>
+    <div class="metric-row"><span class="label">손절</span><span>-2.0%</span></div>
+    <div class="metric-row"><span class="label">익절</span><span>+4.0%</span></div>
+    <div class="metric-row"><span class="label">최대 손실 한도(일일)</span><span>-5.0%</span></div>
+  </div>
+
+  <!-- AI 판단 근거 -->
+  <div class="card span-3">
+    <h3>AI 판단 근거</h3>
+    <div class="ai-reason">
+      현재 상태: 관망 중 — RSI 과매수 구간(72)으로 신규 매수 진입을 보류하고 있습니다. MACD는 상승 신호를 유지 중이나, 단기 변동성이 임계치를 초과해 리스크 관리 모듈이 진입을 제한하고 있습니다.
+      <div class="indicators">
+        <span>RSI: 72</span>
+        <span>MACD: +0.8</span>
+        <span>변동성(1h): 3.2%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 매매 로그 -->
+  <div class="card span-3">
+    <h3>최근 매매 로그</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>시각</th>
+          <th>종류</th>
+          <th>가격 (USDT)</th>
+          <th>수량 (BTC)</th>
+          <th>판단 근거</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>14:10:22</td>
+          <td class="tag-sell">매도</td>
+          <td>61,230.50</td>
+          <td>0.015</td>
+          <td>익절 목표가 도달</td>
+        </tr>
+        <tr>
+          <td>13:42:05</td>
+          <td class="tag-buy">매수</td>
+          <td>60,410.10</td>
+          <td>0.015</td>
+          <td>이동평균 골든크로스 + RSI 45</td>
+        </tr>
+        <tr>
+          <td>11:05:51</td>
+          <td class="tag-sell">매도</td>
+          <td>59,880.00</td>
+          <td>0.020</td>
+          <td>손절 기준 도달</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>
