@@ -21,6 +21,7 @@ FEATURE_COLUMNS = [
     "volume_ratio",
     "funding_rate", "funding_rate_change",
     "is_macro_window", "is_high_vol_regime",
+    "sentiment_score",
     "hour_sin", "hour_cos",
     "dow_sin", "dow_cos",
 ]

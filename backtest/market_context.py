@@ -1,9 +1,12 @@
 """
-비트코인 변동성의 3대 요인을 백테스트에 반영하기 위한 시장 컨텍스트 피처.
+비트코인 변동성의 3대 요인 + SNS/시장심리 요인을 백테스트에 반영하기 위한
+시장 컨텍스트 피처.
 
 1. 레버리지 청산 캐스케이드 -> 펀딩비율(funding rate)로 포지션 쏠림 감지
 2. 거시경제/유동성 환경 -> FOMC 회의 발표일 전후는 신규 진입 회피
 3. 얕은 유동성/뉴스 충격 -> 변동성 급등 구간(과거 90일 상위 10%) 신규 진입 회피
+4. SNS/시장 심리 -> Fear & Greed Index를 부정(0)/중립(1)/긍정(2) 3단계로 매핑.
+   점수가 높을(긍정) 때는 롱을, 낮을(부정) 때는 숏을 우대한다.
 """
 from pathlib import Path
 
@@ -12,6 +15,7 @@ import pandas as pd
 
 DATA_DIR = Path(__file__).parent / "data"
 FUNDING_FILE = DATA_DIR / "BTCUSDT_funding_3y.csv"
+SENTIMENT_FILE = DATA_DIR / "sentiment_fng_3y.csv"
 
 # 펀딩비율 분포(3년치) 기준: 90~95분위 근방을 "롱 과열", 10분위 근방을 "숏 과열"로 설정
 FUNDING_HIGH_THRESHOLD = 0.00015   # 이보다 높으면 롱 쏠림 -> 신규 롱 진입 회피
@@ -40,6 +44,12 @@ def load_funding() -> pd.DataFrame:
     # 원본에 밀리초 단위 지터가 섞여 있어(예: 08:00:00.001) 정시로 정규화
     df["funding_time"] = df["funding_time"].dt.floor("h")
     return df.sort_values("funding_time")
+
+
+def load_sentiment() -> pd.DataFrame:
+    df = pd.read_csv(SENTIMENT_FILE)
+    df["date"] = pd.to_datetime(df["date"], utc=True)
+    return df.sort_values("date")
 
 
 def add_market_context(price_df: pd.DataFrame) -> pd.DataFrame:
@@ -75,15 +85,27 @@ def add_market_context(price_df: pd.DataFrame) -> pd.DataFrame:
     out["realized_vol"] = realized_vol
     out["is_high_vol_regime"] = (realized_vol > vol_threshold.shift(1)).fillna(False)
 
+    # --- 4. SNS/시장심리(Fear & Greed Index): 일별 값을 해당 날짜의 모든 봉에 적용 ---
+    sentiment = load_sentiment()
+    out = pd.merge_asof(
+        out.sort_values("open_time"),
+        sentiment.rename(columns={"date": "open_time"})[["open_time", "sentiment_score"]],
+        on="open_time",
+        direction="backward",
+    )
+    out["sentiment_score"] = out["sentiment_score"].fillna(1)  # 데이터 없으면 중립 취급
+
     out["allow_long_entry"] = (
         (out["funding_rate"] <= FUNDING_HIGH_THRESHOLD)
         & (~out["is_macro_window"])
         & (~out["is_high_vol_regime"])
+        & (out["sentiment_score"] >= 1)  # 부정(0)이면 신규 롱 회피
     )
     out["allow_short_entry"] = (
         (out["funding_rate"] >= FUNDING_LOW_THRESHOLD)
         & (~out["is_macro_window"])
         & (~out["is_high_vol_regime"])
+        & (out["sentiment_score"] <= 1)  # 긍정(2)이면 신규 숏 회피
     )
 
     return out

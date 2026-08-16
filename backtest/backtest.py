@@ -6,6 +6,12 @@ N+1번째 봉의 시가(open)에서 체결된다고 가정한다.
 손절/익절은 보유 중 각 봉의 저가/고가가 기준가를 건드리면 그 기준가에 체결된 것으로 본다.
 숏 포지션은 1배(레버리지 없음) 기준 선형 근사로 손익을 계산하고, 실제 무기한 선물처럼
 펀딩 정산 시점마다 펀딩비를 포지션 가치에서 가감한다(롱은 펀딩비가 양수면 지불, 숏은 반대).
+
+포지션 사이징은 "매 거래 전액배팅"이 아니라 리스크 기반이다: 손절에 걸렸을 때
+자본의 risk_per_trade_pct만큼만 잃도록 포지션 크기를 역산한다
+(notional = cash * risk_per_trade_pct / stop_loss_pct, 상한은 보유 현금 전액 = 레버리지 없음).
+전액배팅은 승률이 애매한 전략을 많이 반복할 때 손실이 곱셈으로 누적되어 파산에
+가까워지는 문제가 있어(자세한 배경은 docs/ARCHITECTURE.md v3 섹션 참고) 이렇게 바꿨다.
 """
 import numpy as np
 import pandas as pd
@@ -13,15 +19,17 @@ import pandas as pd
 FEE_RATE = 0.001  # 바이낸스 테이커 수수료 근사치(0.1%)
 INITIAL_CAPITAL = 10_000_000  # 가상 시작 자본 (단위 무관, 비율만 의미 있음)
 BARS_PER_YEAR = 24 * 365  # 1시간봉 기준
+DEFAULT_RISK_PER_TRADE_PCT = 0.01  # 손절 시 자본의 1%만 잃도록 포지션 크기 역산
 
 
 def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RATE,
                   initial_capital: float = INITIAL_CAPITAL) -> dict:
     df = signal_df.reset_index(drop=True)
     n = len(df)
+    risk_per_trade_pct = params.get("risk_per_trade_pct", DEFAULT_RISK_PER_TRADE_PCT)
 
-    cash = initial_capital
-    position = None  # {"direction": "LONG"/"SHORT", "entry_price", "entry_time", "notional", "funding_accum"}
+    cash = initial_capital  # 포지션에 들어가지 않은 유휴 현금
+    position = None  # {"direction", "entry_price", "entry_time", "entry_index", "notional", "funding_accum"}
     trades = []
     equity_points = np.empty(n)
 
@@ -75,7 +83,7 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                 raw_pnl = position["notional"] * direction_mult * ((exit_price / entry_price) - 1)
                 gross_value = position["notional"] + raw_pnl - position["funding_accum"]
                 exit_fee = max(gross_value, 0) * fee_rate
-                net_cash = gross_value - exit_fee
+                net_value = gross_value - exit_fee
 
                 trades.append({
                     "direction": direction,
@@ -85,35 +93,35 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                     "exit_price": exit_price,
                     "reason": reason,
                     "funding_cost": position["funding_accum"],
-                    "pnl": net_cash - position["notional"],
-                    "return_pct": (net_cash / position["notional"]) - 1,
+                    "pnl": net_value - position["notional"],
+                    "return_pct": (net_value / position["notional"]) - 1,
                 })
-                cash = net_cash
+                cash += net_value  # 포지션에 넣었던 몫을 손익 반영해서 유휴 현금 풀로 반환
                 position = None
 
         if position is None and i > 0:
             prev = df.iloc[i - 1]
+            entry_direction = None
             if bool(prev["buy_signal"]):
-                entry_price = row["open"]
-                fee = cash * fee_rate
-                position = {
-                    "direction": "LONG", "entry_price": entry_price, "entry_time": row["open_time"],
-                    "notional": cash - fee, "funding_accum": 0.0, "entry_index": i,
-                }
-                cash = 0.0
+                entry_direction = "LONG"
             elif bool(prev["short_signal"]):
+                entry_direction = "SHORT"
+
+            if entry_direction is not None:
                 entry_price = row["open"]
-                fee = cash * fee_rate
+                target_notional = cash * (risk_per_trade_pct / params["stop_loss_pct"])
+                notional_gross = min(target_notional, cash)  # 레버리지 없음: 보유 현금 이상 투입 불가
+                fee = notional_gross * fee_rate
+                cash -= notional_gross  # 투입분만 유휴 현금 풀에서 차감(나머지는 유휴 현금으로 남음)
                 position = {
-                    "direction": "SHORT", "entry_price": entry_price, "entry_time": row["open_time"],
-                    "notional": cash - fee, "funding_accum": 0.0, "entry_index": i,
+                    "direction": entry_direction, "entry_price": entry_price, "entry_time": row["open_time"],
+                    "notional": notional_gross - fee, "funding_accum": 0.0, "entry_index": i,
                 }
-                cash = 0.0
 
         if position is not None:
             direction_mult = 1 if position["direction"] == "LONG" else -1
             unrealized = position["notional"] * direction_mult * ((row["close"] / position["entry_price"]) - 1)
-            equity_points[i] = position["notional"] + unrealized - position["funding_accum"]
+            equity_points[i] = cash + position["notional"] + unrealized - position["funding_accum"]
         else:
             equity_points[i] = cash
 
@@ -124,7 +132,7 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
         raw_pnl = position["notional"] * direction_mult * ((last_row["close"] / position["entry_price"]) - 1)
         gross_value = position["notional"] + raw_pnl - position["funding_accum"]
         exit_fee = max(gross_value, 0) * fee_rate
-        net_cash = gross_value - exit_fee
+        net_value = gross_value - exit_fee
         trades.append({
             "direction": direction,
             "entry_time": position["entry_time"],
@@ -133,10 +141,10 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
             "exit_price": last_row["close"],
             "reason": "end_of_period",
             "funding_cost": position["funding_accum"],
-            "pnl": net_cash - position["notional"],
-            "return_pct": (net_cash / position["notional"]) - 1,
+            "pnl": net_value - position["notional"],
+            "return_pct": (net_value / position["notional"]) - 1,
         })
-        cash = net_cash
+        cash += net_value
         equity_points[-1] = cash
 
     equity = pd.Series(equity_points, index=df["open_time"])
