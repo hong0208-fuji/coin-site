@@ -1,0 +1,407 @@
+{
+  "initial_capital": 10000000,
+  "train_test_cutoff": "2025-08-16",
+  "num_combinations_tested": 32,
+  "top_results": [
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.08,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": null
+      },
+      "train": {
+        "total_return_pct": 6.27,
+        "cagr_pct": 3.09,
+        "max_drawdown_pct": -4.07,
+        "sharpe": 0.85,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 45.12,
+        "total_funding_cost": 38564.03,
+        "final_equity": 10626956.01
+      },
+      "test": {
+        "total_return_pct": -2.57,
+        "cagr_pct": -2.57,
+        "max_drawdown_pct": -3.61,
+        "sharpe": -0.92,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": 885.31,
+        "final_equity": 9742906.28
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.03,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": null
+      },
+      "train": {
+        "total_return_pct": 2.65,
+        "cagr_pct": 1.32,
+        "max_drawdown_pct": -3.37,
+        "sharpe": 0.42,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 46.34,
+        "total_funding_cost": 29414.06,
+        "final_equity": 10265277.6
+      },
+      "test": {
+        "total_return_pct": -2.62,
+        "cagr_pct": -2.62,
+        "max_drawdown_pct": -3.5,
+        "sharpe": -0.95,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": -14.48,
+        "final_equity": 9737618.51
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.08,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": 48
+      },
+      "train": {
+        "total_return_pct": 2.33,
+        "cagr_pct": 1.16,
+        "max_drawdown_pct": -2.62,
+        "sharpe": 0.4,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 47.56,
+        "total_funding_cost": 26719.51,
+        "final_equity": 10232723.24
+      },
+      "test": {
+        "total_return_pct": -3.3,
+        "cagr_pct": -3.3,
+        "max_drawdown_pct": -4.17,
+        "sharpe": -1.36,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": -1630.84,
+        "final_equity": 9669941.36
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.03,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": 48
+      },
+      "train": {
+        "total_return_pct": 1.86,
+        "cagr_pct": 0.93,
+        "max_drawdown_pct": -2.58,
+        "sharpe": 0.34,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 47.56,
+        "total_funding_cost": 24732.03,
+        "final_equity": 10186356.69
+      },
+      "test": {
+        "total_return_pct": -3.17,
+        "cagr_pct": -3.17,
+        "max_drawdown_pct": -4.04,
+        "sharpe": -1.31,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": -1633.29,
+        "final_equity": 9683077.43
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.02,
+        "take_profit_pct": 0.08,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": null
+      },
+      "train": {
+        "total_return_pct": 3.27,
+        "cagr_pct": 1.62,
+        "max_drawdown_pct": -8.84,
+        "sharpe": 0.33,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 39.02,
+        "total_funding_cost": 56515.96,
+        "final_equity": 10326638.57
+      },
+      "test": {
+        "total_return_pct": -2.01,
+        "cagr_pct": -2.01,
+        "max_drawdown_pct": -4.34,
+        "sharpe": -0.5,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 55.0,
+        "total_funding_cost": 1988.55,
+        "final_equity": 9799411.9
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.04,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": 48
+      },
+      "train": {
+        "total_return_pct": 1.72,
+        "cagr_pct": 0.86,
+        "max_drawdown_pct": -2.58,
+        "sharpe": 0.31,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 47.56,
+        "total_funding_cost": 26167.48,
+        "final_equity": 10172201.34
+      },
+      "test": {
+        "total_return_pct": -3.3,
+        "cagr_pct": -3.3,
+        "max_drawdown_pct": -4.17,
+        "sharpe": -1.36,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": -1630.84,
+        "final_equity": 9669941.36
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.04,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": null
+      },
+      "train": {
+        "total_return_pct": 1.88,
+        "cagr_pct": 0.94,
+        "max_drawdown_pct": -3.91,
+        "sharpe": 0.29,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 45.12,
+        "total_funding_cost": 33927.5,
+        "final_equity": 10188481.15
+      },
+      "test": {
+        "total_return_pct": -2.38,
+        "cagr_pct": -2.38,
+        "max_drawdown_pct": -3.3,
+        "sharpe": -0.85,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": 758.68,
+        "final_equity": 9762474.84
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.02,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": 48
+      },
+      "train": {
+        "total_return_pct": 0.7,
+        "cagr_pct": 0.35,
+        "max_drawdown_pct": -2.58,
+        "sharpe": 0.15,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 48.78,
+        "total_funding_cost": 22044.18,
+        "final_equity": 10070275.97
+      },
+      "test": {
+        "total_return_pct": -3.11,
+        "cagr_pct": -3.11,
+        "max_drawdown_pct": -4.11,
+        "sharpe": -1.34,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 57.5,
+        "total_funding_cost": -2183.51,
+        "final_equity": 9689099.59
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.03,
+        "take_profit_pct": 0.02,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": null
+      },
+      "train": {
+        "total_return_pct": 0.64,
+        "cagr_pct": 0.32,
+        "max_drawdown_pct": -2.91,
+        "sharpe": 0.13,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 51.22,
+        "total_funding_cost": 25552.85,
+        "final_equity": 10063882.41
+      },
+      "test": {
+        "total_return_pct": -2.72,
+        "cagr_pct": -2.72,
+        "max_drawdown_pct": -3.72,
+        "sharpe": -1.12,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 60.0,
+        "total_funding_cost": -1706.51,
+        "final_equity": 9728253.55
+      }
+    },
+    {
+      "params": {
+        "short_window": 30,
+        "long_window": 100,
+        "rsi_period": 14,
+        "rsi_overbought": 75,
+        "rsi_oversold": 30,
+        "stop_loss_pct": 0.02,
+        "take_profit_pct": 0.08,
+        "initial_entry_fraction": 0.3,
+        "confirm_window": 4,
+        "max_holding_bars": 48
+      },
+      "train": {
+        "total_return_pct": -0.34,
+        "cagr_pct": -0.17,
+        "max_drawdown_pct": -4.94,
+        "sharpe": -0.02,
+        "num_trades": 82,
+        "num_long_trades": 57,
+        "num_short_trades": 25,
+        "num_addon_trades": 33,
+        "win_rate_pct": 43.9,
+        "total_funding_cost": 36988.54,
+        "final_equity": 9965814.94
+      },
+      "test": {
+        "total_return_pct": -3.33,
+        "cagr_pct": -3.33,
+        "max_drawdown_pct": -4.63,
+        "sharpe": -1.0,
+        "num_trades": 40,
+        "num_long_trades": 5,
+        "num_short_trades": 35,
+        "num_addon_trades": 15,
+        "win_rate_pct": 55.0,
+        "total_funding_cost": -1933.1,
+        "final_equity": 9667092.62
+      }
+    }
+  ]
+}
