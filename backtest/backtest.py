@@ -45,6 +45,11 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                 sign = 1 if direction == "LONG" else -1  # 롱은 양수 펀딩비를 지불(비용), 숏은 반대
                 position["funding_accum"] += sign * funding_rate * position["notional"]
 
+            max_holding_bars = params.get("max_holding_bars")
+            held_too_long = (
+                max_holding_bars is not None and (i - position["entry_index"]) >= max_holding_bars
+            )
+
             exit_price, reason = None, None
             if direction == "LONG":
                 if row["low"] <= stop_price:
@@ -53,6 +58,8 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                     exit_price, reason = target_price, "take_profit"
                 elif i > 0 and bool(df.iloc[i - 1]["sell_signal"]):
                     exit_price, reason = row["open"], "signal_exit"
+                elif held_too_long:
+                    exit_price, reason = row["open"], "max_holding"
             else:
                 if row["high"] >= stop_price:
                     exit_price, reason = stop_price, "stop_loss"
@@ -60,6 +67,8 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                     exit_price, reason = target_price, "take_profit"
                 elif i > 0 and bool(df.iloc[i - 1]["cover_signal"]):
                     exit_price, reason = row["open"], "signal_exit"
+                elif held_too_long:
+                    exit_price, reason = row["open"], "max_holding"
 
             if exit_price is not None:
                 direction_mult = 1 if direction == "LONG" else -1
@@ -89,7 +98,7 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                 fee = cash * fee_rate
                 position = {
                     "direction": "LONG", "entry_price": entry_price, "entry_time": row["open_time"],
-                    "notional": cash - fee, "funding_accum": 0.0,
+                    "notional": cash - fee, "funding_accum": 0.0, "entry_index": i,
                 }
                 cash = 0.0
             elif bool(prev["short_signal"]):
@@ -97,7 +106,7 @@ def run_backtest(signal_df: pd.DataFrame, params: dict, fee_rate: float = FEE_RA
                 fee = cash * fee_rate
                 position = {
                     "direction": "SHORT", "entry_price": entry_price, "entry_time": row["open_time"],
-                    "notional": cash - fee, "funding_accum": 0.0,
+                    "notional": cash - fee, "funding_accum": 0.0, "entry_index": i,
                 }
                 cash = 0.0
 
