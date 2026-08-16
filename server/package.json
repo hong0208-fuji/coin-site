@@ -1,0 +1,17 @@
+{
+  "name": "coin-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "coin 자동매매 웹서비스 - Express 백엔드 (2단계: 로그인 + GO/STOP 상태 API)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "hash-password": "node scripts/hash-password.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}

@@ -3,3 +3,11 @@ node_modules/
 .env.local
 .DS_Store
 *.log
+
+# 서버 런타임 상태(개인 매매 상태 파일)
+server/data/*.json
+
+# Python 백테스트
+backtest/venv/
+backtest/__pycache__/
+backtest/data/
