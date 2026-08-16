@@ -24,9 +24,10 @@ PARAM_GRID = {
     "short_window": [10, 20, 30],
     "long_window": [50, 100],
     "rsi_period": [14],
-    "rsi_overbought": [65, 70, 75],
-    "stop_loss_pct": [0.02, 0.03, 0.05],
-    "take_profit_pct": [0.04, 0.06, 0.08],
+    "rsi_overbought": [70, 75],
+    "rsi_oversold": [25, 30],
+    "stop_loss_pct": [0.02, 0.03],
+    "take_profit_pct": [0.04, 0.08],
 }
 
 
@@ -87,7 +88,8 @@ def save_report(results: list, cutoff, top_n: int = 10):
     }
     (RESULTS_DIR / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str))
 
-    lines = ["# 백테스트 결과 (3년치 BTCUSDT 1시간봉)", ""]
+    lines = ["# 백테스트 결과 v2 - 롱/숏 + 3요인 필터 (3년치 BTCUSDT 1시간봉)", ""]
+    lines.append("펀딩비율(레버리지 쏠림) / FOMC 매크로 이벤트 / 변동성 급등 3가지 요인을 신규 진입 필터로 반영, 숏 매매 추가.")
     lines.append(f"- 학습(train) / 검증(test) 분리 기준일: {cutoff.date()}")
     lines.append(f"- 탐색한 파라미터 조합 수: {len(results)}")
     lines.append("")
@@ -96,20 +98,21 @@ def save_report(results: list, cutoff, top_n: int = 10):
         best = top[0]
         lines.append(f"```\n{json.dumps(best['params'], ensure_ascii=False, indent=2)}\n```")
         lines.append("")
-        lines.append("| 구간 | 총수익률 | CAGR | MDD | 샤프 | 거래수 | 승률 |")
-        lines.append("|---|---|---|---|---|---|---|")
+        lines.append("| 구간 | 총수익률 | CAGR | MDD | 샤프 | 거래수(롱/숏) | 승률 | 펀딩비용 |")
+        lines.append("|---|---|---|---|---|---|---|---|")
         for label, m in [("학습(train, ~2년)", best["train"]), ("검증(test, 최근 1년, out-of-sample)", best["test"])]:
             lines.append(
                 f"| {label} | {m['total_return_pct']}% | {m['cagr_pct']}% | {m['max_drawdown_pct']}% | "
-                f"{m['sharpe']} | {m['num_trades']} | {m['win_rate_pct']}% |"
+                f"{m['sharpe']} | {m['num_trades']}({m['num_long_trades']}/{m['num_short_trades']}) | "
+                f"{m['win_rate_pct']}% | {m['total_funding_cost']:,.0f} |"
             )
     lines.append("")
     lines.append("## 상위 10개 조합 (train 샤프비율 순)")
-    lines.append("| 순위 | short/long/rsi_ob/sl/tp | train 수익률 | train 샤프 | test 수익률 | test 샤프 |")
+    lines.append("| 순위 | short/long/rsi_ob/rsi_os/sl/tp | train 수익률 | train 샤프 | test 수익률 | test 샤프 |")
     lines.append("|---|---|---|---|---|---|")
     for i, r in enumerate(top, start=1):
         p = r["params"]
-        param_str = f"{p['short_window']}/{p['long_window']}/{p['rsi_overbought']}/{p['stop_loss_pct']}/{p['take_profit_pct']}"
+        param_str = f"{p['short_window']}/{p['long_window']}/{p['rsi_overbought']}/{p['rsi_oversold']}/{p['stop_loss_pct']}/{p['take_profit_pct']}"
         lines.append(
             f"| {i} | {param_str} | {r['train']['total_return_pct']}% | {r['train']['sharpe']} | "
             f"{r['test']['total_return_pct']}% | {r['test']['sharpe']} |"
