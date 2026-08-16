@@ -2,11 +2,16 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const session = require("express-session");
+const rateLimit = require("express-rate-limit");
 const { verifyCredentials } = require("./lib/auth");
 const tradingState = require("./lib/tradingState");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+
+// 배포 시 리버스 프록시(Nginx/Caddy 등) 뒤에서 HTTPS를 쓸 경우 secure 쿠키 판별에 필요
+if (isProduction) app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -15,9 +20,22 @@ app.use(
     secret: process.env.SESSION_SECRET || "change-me-in-env",
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 12 },
+    cookie: {
+      httpOnly: true,
+      secure: isProduction, // HTTPS 배포 시(NODE_ENV=production)에만 secure 쿠키 강제
+      maxAge: 1000 * 60 * 60 * 12,
+    },
   })
 );
+
+// 로그인 무차별 대입 공격 방어: 15분에 IP당 10회로 제한
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요." },
+});
 
 function requireAuthPage(req, res, next) {
   if (req.session && req.session.user) return next();
@@ -52,7 +70,7 @@ app.get("/dashboard", requireAuthPage, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", loginLimiter, (req, res) => {
   const { username, password } = req.body || {};
   if (verifyCredentials(username, password)) {
     req.session.user = username;
